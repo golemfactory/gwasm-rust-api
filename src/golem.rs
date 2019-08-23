@@ -1,3 +1,6 @@
+//! Convenience async functions for creating gWasm tasks, connecting to a
+//! Golem instance, and listening for task's progress as it's computed
+//! on Golem.
 use super::error::Error;
 use super::task::{ComputedTask, Task};
 use super::{Net, ProgressUpdate};
@@ -14,6 +17,18 @@ use std::time::Duration;
 use tokio::timer::Interval;
 use tokio_ctrlc_error::AsyncCtrlc;
 
+/// A convenience function for running a gWasm [`Task`] on Golem
+///
+/// This function is essentially an async equivalent of [`gwasm_api::compute`] with
+/// two exceptions: 1) it returns a future [`ComputedTask`], and 2) it optionally allows
+/// to specify the polling interval for the task's updates (which by default is set to 2secs).
+///
+/// Note that since the function returns a future, you'll need to set up actix's event loop
+/// to actually execute it, much like it's done for you in [`gwasm_api::compute`].
+///
+/// [`Task`]: ../task/struct.Task.html
+/// [`ComputedTask`]: ../task/struct.ComputedTask.html
+/// [`gwasm_api::compute`]: ../fn.compute.html
 pub fn compute<P, S>(
     datadir: P,
     address: S,
@@ -29,7 +44,7 @@ where
 {
     create_task(datadir.as_ref(), address.as_ref(), port, net, task.clone())
         .and_then(move |(endpoint, task_id)| {
-            listen_task_progress(endpoint.clone(), task_id.clone(), polling_interval)
+            poll_task_progress(endpoint.clone(), task_id.clone(), polling_interval)
                 .fold(
                     ProgressActor::new(progress_handler).start(),
                     |addr, progress| addr.send(Update { progress }).and_then(|_| Ok(addr)),
@@ -51,6 +66,14 @@ where
         .and_then(|()| task.try_into())
 }
 
+/// A convenience function for creating a gWasm [`Task`] on Golem
+///
+/// This function returns to necessary components to track the `Task` on Golem Network:
+/// 1) an object implementing [`RpcEndpoint`] trait, 2) created `Task`'s ID as `String`.
+///
+/// [`Task`]: ../task/struct.Task.html
+/// [`RpcEndpoint`]:
+/// https://golemfactory.github.io/golem-client/latest/actix_wamp/trait.RpcEndpoint.html
 pub fn create_task(
     datadir: &Path,
     address: &str,
@@ -68,7 +91,16 @@ pub fn create_task(
         .from_err()
 }
 
-pub fn listen_task_progress(
+/// A convenience function for polling gWasm [`Task`]'s computation progress on Golem
+///
+/// This function returns an async [`Stream`] which can be asynchronously
+/// iterated for new progress updates. Note however that this function will actively poll
+/// for the updates rather than subscribe to some event publisher at a `polling_interval`
+/// which if not specified by default equals 2secs.
+///
+/// [`Task`]: ../task/struct.Task.html
+/// [`Stream`]: https://docs.rs/futures/0.1.28/futures/stream/trait.Stream.html
+pub fn poll_task_progress(
     endpoint: impl Clone + Send + RpcEndpoint + 'static,
     task_id: String,
     polling_interval: Option<Duration>,

@@ -21,14 +21,14 @@
 )]
 
 pub mod error;
-mod golem;
+pub mod golem;
 pub mod task;
 pub mod timeout;
 
+use actix::System;
 use error::Error;
-use futures::future::Future;
-use std::convert::TryInto;
-use std::path::PathBuf;
+pub use golem_rpc_api::Net;
+use std::path::Path;
 use task::{ComputedTask, Task};
 
 pub(crate) type Result<T> = std::result::Result<T, Error>;
@@ -43,22 +43,24 @@ pub fn compute<P, S>(
     datadir: P,
     address: S,
     port: u16,
+    net: Net,
     task: Task,
     progress_handler: impl ProgressUpdate + 'static,
-) -> impl Future<Item = ComputedTask, Error = Error>
+) -> Result<ComputedTask>
 where
-    P: Into<PathBuf>,
-    S: Into<String>,
+    P: AsRef<Path>,
+    S: AsRef<str>,
 {
-    golem::compute(
-        datadir.into(),
-        address.into(),
+    let mut system = System::new(task.name());
+    system.block_on(golem::compute(
+        datadir,
+        address,
         port,
-        task.clone(),
+        task,
+        net,
         progress_handler,
         None,
-    )
-    .and_then(|()| task.try_into())
+    ))
 }
 
 pub mod prelude {
@@ -66,5 +68,5 @@ pub mod prelude {
         ComputedSubtask, ComputedTask, GWasmBinary, Options, Subtask, Task, TaskBuilder,
     };
     pub use super::timeout::Timeout;
-    pub use super::{compute, ProgressUpdate};
+    pub use super::{compute, Net, ProgressUpdate};
 }

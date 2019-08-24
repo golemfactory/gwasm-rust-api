@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["compute","A convenience function for running a gWasm [`Task`] on Golem"],["create_task","A convenience function for creating a gWasm [`Task`] on Golem"],["poll_task_progress","A convenience function for polling gWasm [`Task`]'s computation progress on Golem"]]});

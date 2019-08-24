@@ -1,8 +1,10 @@
-# gwasm-api - gWasm API for Rust apps
-[![build-status]][build-link]
+# gwasm-api [![build-status]][build-link]
 
 [build-status]: https://dev.azure.com/kubkon/gwasm-rust-api/_apis/build/status/golemfactory.gwasm-rust-api?branchName=master
 [build-link]: https://dev.azure.com/kubkon/gwasm-rust-api/_build?definitionId=4
+
+gwasm-api - gWasm API for Rust apps
+* [API Documentation (Development)](https://golemfactory.github.io/gwasm-rust-api/gwasm_api/index.html)
 
 [gWasm](https://docs.golem.network/#/Products/Brass-Beta/gWASM) is Golem's new
 meta use-case which allows Golem's developers/users to deploy their Wasm apps

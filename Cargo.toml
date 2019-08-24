@@ -1,8 +1,14 @@
 [package]
 name = "gwasm-api"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 authors = ["Golem RnD Team <contact@golem.network>"]
 edition = "2018"
+license = "GPL-3.0"
+readme = "README.md"
+repository = "https://github.com/golemfactory/gwasm-rust-api"
+homepage = "https://github.com/golemfactory/gwasm-rust-api"
+documentation = "https://docs.rs/gwasm-rust-api"
+description = "gWasm API for Rust apps"
 
 [dependencies]
 actix = "0.8"

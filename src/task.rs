@@ -1,14 +1,14 @@
 //! Convenience types for creating and managing gWasm tasks
-use super::error::Error;
-use super::timeout::Timeout;
-use super::Result;
+use super::{error::Error, timeout::Timeout, Result};
 use serde::Serialize;
-use std::collections::BTreeMap;
-use std::convert::TryFrom;
-use std::fs::{self, File};
-use std::io::BufReader;
-use std::path::{Path, PathBuf};
-use std::str::FromStr;
+use std::{
+    collections::BTreeMap,
+    convert::TryFrom,
+    fs::{self, File},
+    io::BufReader,
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 
 /// Wrapper type for easy passing of gWasm binary
 #[derive(Debug)]

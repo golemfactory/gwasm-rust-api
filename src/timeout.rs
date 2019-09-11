@@ -1,6 +1,5 @@
 //! Types representing Golem Task's timeout values
-use super::error::Error;
-use super::Result;
+use super::{error::Error, Result};
 use chrono::naive::NaiveTime;
 use serde::{Serialize, Serializer};
 use std::str::FromStr;

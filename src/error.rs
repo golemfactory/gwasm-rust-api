@@ -8,42 +8,59 @@ use tokio::timer;
 #[derive(Debug, Fail)]
 pub enum Error {
     /// Wraps actix's `MailboxError` error
-    #[fail(display = "Actix mailbox error")]
+    #[fail(display = "internal gWasm API error: {}", _0)]
     MailboxError(MailboxError),
 
     /// Wraps tokio's `timer::Error` error
-    #[fail(display = "Tokio timer error")]
+    #[fail(display = "internal gWasm API error: {}", _0)]
     TimerError(timer::Error),
 
     /// Wraps libstd's `std::io::Error` error
-    #[fail(display = "I/O error")]
+    #[fail(display = "internal gWasm API error: {}", _0)]
     IOError(io::Error),
 
     /// Wraps Golem's `actix_wamp::Error` error
-    #[fail(display = "Actix WAMP error")]
+    #[fail(display = "internal Golem error: {}", _0)]
     WampError(actix_wamp::Error),
 
     /// Wraps Golem RPC's `golem_rpc_api::Error` error
-    #[fail(display = "Golem RPC error")]
+    #[fail(display = "internal Golem error: {}", _0)]
     GolemRPCError(golem_rpc_api::Error),
 
     /// Wraps `tokio_ctrlc_error::KeyboardInterrupt` which is used to handle
     /// Ctrl-C interrupt event for the lib's client
-    #[fail(display = "Keyboard interrupt")]
+    #[fail(display = "received Ctrl-C interrupt")]
     KeyboardInterrupt(tokio_ctrlc_error::KeyboardInterrupt),
 
     /// Wraps other `tokio_ctrlc_error::IoError` type errors
-    #[fail(display = "Tokio Ctrl-C error")]
+    #[fail(display = "internal gWasm API error: {}", _0)]
     CtrlcError(tokio_ctrlc_error::IoError),
 
     /// Wraps `chrono::ParseError` error
-    #[fail(display = "Chrono error")]
+    #[fail(display = "error parsing Timeout value: {}", _0)]
     ChronoError(chrono::ParseError),
 
     /// Error generated when trying to create a zero [`Timeout`](../timeout/struct.Timeout.html)
     /// value for a Golem Task
-    #[fail(display = "Zero timeout error")]
+    #[fail(display = "zero timeout \"00:00:00\" is forbidden")]
     ZeroTimeoutError,
+
+    /// Error when no TaskInfo is received when polling for task progress
+    /// in [`poll_task_progress`](../golem/fn.poll_task_progress.html)
+    #[fail(display = "empty TaskInfo received from Golem")]
+    EmptyTaskInfo,
+
+    /// Error when no progress can be extracted from TaskInfo
+    #[fail(display = "empty progress in TaskInfo")]
+    EmptyProgress,
+
+    /// Error when gWasm task was aborted externally
+    #[fail(display = "task aborted externally")]
+    TaskAborted,
+
+    /// Error when gWasm task timed out
+    #[fail(display = "task timed out")]
+    TaskTimedOut,
 }
 
 impl From<io::Error> for Error {

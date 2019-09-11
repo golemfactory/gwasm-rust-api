@@ -1,19 +1,24 @@
 //! Convenience async functions for creating gWasm tasks, connecting to a
 //! Golem instance, and listening for task's progress as it's computed
 //! on Golem.
-use super::error::Error;
-use super::task::{ComputedTask, Task};
-use super::{Net, ProgressUpdate};
+use super::{
+    error::Error,
+    task::{ComputedTask, Task},
+    Net, ProgressUpdate,
+};
 use actix::{Actor, ActorContext, Context, Handler, Message};
 use actix_wamp::RpcEndpoint;
-use futures::stream::{self, Stream};
-use futures::{future, Future};
-use golem_rpc_api::comp::AsGolemComp;
-use golem_rpc_api::connect_to_app;
+use futures::{
+    future,
+    stream::{self, Stream},
+    Future,
+};
+use golem_rpc_api::{
+    comp::{AsGolemComp, TaskStatus as GolemTaskStatus},
+    connect_to_app,
+};
 use serde_json::json;
-use std::convert::TryInto;
-use std::path::Path;
-use std::time::Duration;
+use std::{convert::TryInto, path::Path, time::Duration};
 use tokio::timer::Interval;
 use tokio_ctrlc_error::AsyncCtrlc;
 
@@ -47,7 +52,12 @@ where
             poll_task_progress(endpoint.clone(), task_id.clone(), polling_interval)
                 .fold(
                     ProgressActor::new(progress_handler).start(),
-                    |addr, progress| addr.send(Update { progress }).and_then(|_| Ok(addr)),
+                    |addr, task_status| {
+                        addr.send(Update {
+                            progress: task_status.progress,
+                        })
+                        .and_then(|_| Ok(addr))
+                    },
                 )
                 .and_then(|addr| addr.send(Finish).map_err(Error::from))
                 .ctrlc_as_error()
@@ -104,24 +114,36 @@ pub fn poll_task_progress(
     endpoint: impl Clone + Send + RpcEndpoint + 'static,
     task_id: String,
     polling_interval: Option<Duration>,
-) -> impl Stream<Item = f64, Error = Error> + 'static {
+) -> impl Stream<Item = TaskStatus, Error = Error> + 'static {
     stream::unfold(TaskState::new(endpoint, task_id), |state| {
-        if state.progress < 1.0 {
-            let mut next_state = TaskState::new(state.endpoint.clone(), state.task_id.clone());
-            Some(
-                state
-                    .endpoint
-                    .as_golem_comp()
-                    .get_task(state.task_id.clone())
-                    .and_then(move |task_info| {
-                        next_state.progress = task_info.unwrap().progress.unwrap();
-                        Ok((next_state.progress, next_state))
-                    })
-                    .from_err(),
-            )
-        } else {
-            None
+        if let Some(status) = state.task_status.status {
+            match status {
+                GolemTaskStatus::Finished => return None,
+                GolemTaskStatus::Aborted => {
+                    return Some(future::Either::A(future::err(Error::TaskAborted)))
+                }
+                GolemTaskStatus::Timeout => {
+                    return Some(future::Either::A(future::err(Error::TaskTimedOut)))
+                }
+                _ => {}
+            }
         }
+
+        let mut next_state = TaskState::new(state.endpoint.clone(), state.task_id.clone());
+        Some(future::Either::B(
+            state
+                .endpoint
+                .as_golem_comp()
+                .get_task(state.task_id.clone())
+                .map_err(Error::from)
+                .and_then(move |task_info| {
+                    let task_info = task_info.ok_or(Error::EmptyTaskInfo)?;
+                    next_state.task_status.status = Some(task_info.status);
+                    next_state.task_status.progress =
+                        task_info.progress.ok_or(Error::EmptyProgress)?;
+                    Ok((next_state.task_status.clone(), next_state))
+                }),
+        ))
     })
     .zip(
         Interval::new_interval(polling_interval.unwrap_or_else(|| Duration::from_secs(2)))
@@ -197,7 +219,7 @@ where
 {
     endpoint: Endpoint,
     task_id: String,
-    progress: f64,
+    task_status: TaskStatus,
 }
 
 impl<Endpoint> TaskState<Endpoint>
@@ -208,6 +230,22 @@ where
         Self {
             endpoint,
             task_id,
+            task_status: TaskStatus::default(),
+        }
+    }
+}
+
+/// Stores current status of gWasm task
+#[derive(Clone)]
+pub struct TaskStatus {
+    status: Option<GolemTaskStatus>,
+    progress: f64,
+}
+
+impl Default for TaskStatus {
+    fn default() -> Self {
+        Self {
+            status: None,
             progress: 0.0,
         }
     }

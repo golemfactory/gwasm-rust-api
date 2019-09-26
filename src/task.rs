@@ -185,8 +185,6 @@ impl<'a> TaskBuilder<'a> {
 /// required by Golem (see [gWasm Task JSON]), and 2) it tracks the dirs and files
 /// created on disk which contain the actual subtasks' data and params.
 ///
-/// Note that `Task` can only be created using the [`TaskBuilder`].
-///
 /// # Example:
 /// ```
 /// use gwasm_api::task::{GWasmBinary, TaskBuilder};
@@ -217,7 +215,7 @@ pub struct Task {
 }
 
 impl Task {
-    /// Creates new `Task` instance
+    /// Creates a new `Task` instance
     pub fn new<S: Into<String>>(
         name: S,
         bid: f64,
@@ -265,8 +263,7 @@ impl Task {
 ///
 /// Stores information such as the name of JavaScript file, or the
 /// name of Wasm binary. This struct should only ever be used in conjunction
-/// with [`Task`] structure, and thus, as such, it is impossible to be created
-/// on its own.
+/// with the [`Task`] structure.
 ///
 /// [`Task`]: ../task/struct.Task.html
 #[derive(Debug, Serialize, Clone)]
@@ -281,7 +278,7 @@ pub struct Options {
 }
 
 impl Options {
-    /// Creates new `Options` instance
+    /// Creates a new `Options` instance
     pub fn new<S: Into<String>, P: Into<PathBuf>>(
         js_name: S,
         wasm_name: S,
@@ -339,7 +336,7 @@ pub struct Subtask {
 }
 
 impl Subtask {
-    /// Creates new `Subtask` instance
+    /// Creates a new `Subtask` instance
     pub fn new() -> Self {
         Self {
             exec_args: Vec::new(),

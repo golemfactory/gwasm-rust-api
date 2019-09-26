@@ -217,7 +217,8 @@ pub struct Task {
 }
 
 impl Task {
-    fn new<S: Into<String>>(
+    /// Creates new `Task` instance
+    pub fn new<S: Into<String>>(
         name: S,
         bid: f64,
         timeout: Timeout,
@@ -280,7 +281,8 @@ pub struct Options {
 }
 
 impl Options {
-    fn new<S: Into<String>, P: Into<PathBuf>>(
+    /// Creates new `Options` instance
+    pub fn new<S: Into<String>, P: Into<PathBuf>>(
         js_name: S,
         wasm_name: S,
         input_dir_path: P,
@@ -337,7 +339,8 @@ pub struct Subtask {
 }
 
 impl Subtask {
-    fn new() -> Self {
+    /// Creates new `Subtask` instance
+    pub fn new() -> Self {
         Self {
             exec_args: Vec::new(),
             output_file_paths: Vec::new(),

@@ -192,6 +192,7 @@ pub mod prelude {
     //! # #![allow(unused_imports)]
     //! use gwasm_api::prelude::*;
     //! ```
+    pub use super::error::Error;
     pub use super::task::{
         ComputedSubtask, ComputedTask, GWasmBinary, Options, Subtask, Task, TaskBuilder,
     };

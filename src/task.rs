@@ -323,6 +323,11 @@ impl Options {
             .iter()
             .map(|(name, subtask)| (name.as_str(), subtask))
     }
+
+    /// Adds a new [`Subtask`] under the given name.
+    pub fn add_subtask(&mut self, name: String, subtask: Subtask) {
+        self.subtasks.insert(name, subtask);
+    }
 }
 
 /// Struct representing gWasm task's subtask substructure

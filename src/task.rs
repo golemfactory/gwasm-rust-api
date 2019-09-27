@@ -336,8 +336,10 @@ impl Options {
 /// and output file paths for the computed results.
 #[derive(Debug, Serialize, Clone)]
 pub struct Subtask {
-    exec_args: Vec<String>,
-    output_file_paths: Vec<PathBuf>,
+    /// CLI arguments to be passed for this subtask
+    pub exec_args: Vec<String>,
+    /// Paths to output files that will be used by this subtask
+    pub output_file_paths: Vec<PathBuf>,
 }
 
 impl Subtask {

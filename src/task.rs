@@ -6,7 +6,7 @@ use std::{
     convert::TryFrom,
     fs::{self, File},
     io::BufReader,
-    path::{Path, PathBuf},
+    path::{Component, Path, PathBuf},
     str::FromStr,
 };
 
@@ -455,7 +455,8 @@ impl TryFrom<Task> for ComputedTask {
             };
 
             for out_path in subtask.output_file_paths() {
-                let f = File::open(output_dir.join(out_path))?;
+                let relative_path = out_path.strip_prefix(Component::RootDir).unwrap_or(out_path);
+                let f = File::open(output_dir.join(relative_path))?;
                 let reader = BufReader::new(f);
                 computed_subtask.data.insert(out_path.into(), reader);
             }

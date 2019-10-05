@@ -436,6 +436,8 @@ pub struct ComputedSubtask {
     /// [`Subtask::output_file_paths`]: ../task/struct.Subtask.html#method.output_file_paths
     /// [`BufReader`]: https://doc.rust-lang.org/std/io/struct.BufReader.html
     pub data: BTreeMap<PathBuf, BufReader<File>>,
+    /// Subtask's name
+    pub name: String,
 }
 
 impl TryFrom<Task> for ComputedTask {
@@ -452,6 +454,7 @@ impl TryFrom<Task> for ComputedTask {
             let output_dir = task.options.output_dir_path().join(s_name);
             let mut computed_subtask = ComputedSubtask {
                 data: BTreeMap::new(),
+                name: String::from(s_name),
             };
 
             for out_path in subtask.output_file_paths() {

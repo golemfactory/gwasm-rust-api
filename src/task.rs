@@ -458,7 +458,9 @@ impl TryFrom<Task> for ComputedTask {
             };
 
             for out_path in subtask.output_file_paths() {
-                let relative_path = out_path.strip_prefix(Component::RootDir).unwrap_or(out_path);
+                let relative_path = out_path
+                    .strip_prefix(Component::RootDir)
+                    .unwrap_or(out_path);
                 let f = File::open(output_dir.join(relative_path))?;
                 let reader = BufReader::new(f);
                 computed_subtask.data.insert(out_path.into(), reader);

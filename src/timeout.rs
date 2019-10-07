@@ -3,6 +3,7 @@ use super::{error::Error, Result};
 use chrono::naive::NaiveTime;
 use serde::{Serialize, Serializer};
 use std::str::FromStr;
+use std::fmt;
 
 /// Wrapper type for [`NaiveTime`]
 ///
@@ -35,6 +36,12 @@ impl FromStr for Timeout {
         } else {
             Ok(Self(timeout))
         }
+    }
+}
+
+impl fmt::Display for Timeout {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0.format("%H:%M:%S").to_string())
     }
 }
 

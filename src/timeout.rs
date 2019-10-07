@@ -2,8 +2,8 @@
 use super::{error::Error, Result};
 use chrono::naive::NaiveTime;
 use serde::{Serialize, Serializer};
-use std::str::FromStr;
 use std::fmt;
+use std::str::FromStr;
 
 /// Wrapper type for [`NaiveTime`]
 ///

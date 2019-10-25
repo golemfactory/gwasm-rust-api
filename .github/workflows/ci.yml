@@ -46,27 +46,27 @@ jobs:
       with:
         command: test
     - name: Install openssl (Windows)
-      if: matrix.os == windows
+      if: matrix.os == 'windows'
       run: |
         vcpkg search openssl
         vcpkg install openssl:x64-windows
         vcpkg list
     - name: Build debug (Windows)
-      if: matrix.os == windows
+      if: matrix.os == 'windows'
       env:
         VCPKGRS_DYNAMIC: ${{ 1 }}
       run: |
         vcpkg integrate install
         cargo build
     - name: Build release (Windows)
-      if: matrix.os == windows
+      if: matrix.os == 'windows'
       env:
         VCPKGRS_DYNAMIC: ${{ 1 }}
       run: |
         vcpkg integrate install
         cargo build --release
     - name: Run tests (Windows)
-      if: matrix.os == windows
+      if: matrix.os == 'windows'
       env:
         VCPKGRS_DYNAMIC: ${{ 1 }}
       run: |

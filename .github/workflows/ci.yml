@@ -28,7 +28,7 @@ jobs:
         override: true
         components: rustfmt
     - name: Check formatting
-      uses: action-rs/cargo@v1
+      uses: actions-rs/cargo@v1
       with:
         command: fmt
         args: --all -- --check

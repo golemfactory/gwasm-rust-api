@@ -9,13 +9,13 @@ on:
       - master
 
 jobs:
-  build_stable:
-    name: Build stable
+  build_stable_nix:
+    name: Build stable *nix
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macOS, windows]
+        os: [ubuntu, macOS]
 
     steps:
     - name: Checkout
@@ -32,41 +32,57 @@ jobs:
       with:
         command: fmt
         args: --all -- --check
-    - name: Build debug (*nix)
+    - name: Build debug
       uses: actions-rs/cargo@v1
       with:
         command: build
-    - name: Build release (*nix)
+    - name: Build release
       uses: actions-rs/cargo@v1
       with:
         command: build
         args: --release
-    - name: Run tests (*nix)
+    - name: Run tests
       uses: actions-rs/cargo@v1
       with:
         command: test
-    - name: Install openssl (Windows)
-      if: matrix.os == 'windows'
+
+  build_stable_win:
+    name: Build stable Windows
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: rustfmt
+    - name: Check formatting
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+    - name: Install openssl
       run: |
         vcpkg search openssl
         vcpkg install openssl:x64-windows
         vcpkg list
-    - name: Build debug (Windows)
-      if: matrix.os == 'windows'
+    - name: Build debug
       env:
         VCPKGRS_DYNAMIC: ${{ 1 }}
       run: |
         vcpkg integrate install
         cargo build
-    - name: Build release (Windows)
-      if: matrix.os == 'windows'
+    - name: Build release
       env:
         VCPKGRS_DYNAMIC: ${{ 1 }}
       run: |
         vcpkg integrate install
         cargo build --release
-    - name: Run tests (Windows)
-      if: matrix.os == 'windows'
+    - name: Run tests
       env:
         VCPKGRS_DYNAMIC: ${{ 1 }}
       run: |

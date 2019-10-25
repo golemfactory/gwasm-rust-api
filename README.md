@@ -1,7 +1,7 @@
 # gwasm-api [![build-status]][build-link]
 
-[build-status]: https://dev.azure.com/kubkon/gwasm-rust-api/_apis/build/status/golemfactory.gwasm-rust-api?branchName=master
-[build-link]: https://dev.azure.com/kubkon/gwasm-rust-api/_build?definitionId=4
+[build-status]: https://github.com/golemfactory/gwasm-rust-api/workflows/Continuous%20Integration/badge.svg
+[build-link]: https://github.com/golemfactory/gwasm-rust-api/actions
 
 gwasm-api - gWasm API for Rust apps
 * [API Documentation (Development)](https://golemfactory.github.io/gwasm-rust-api/gwasm_api/index.html)

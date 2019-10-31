@@ -55,6 +55,7 @@ pub struct TaskBuilder<'a> {
     subtask_timeout: Option<Timeout>,
     input_dir_path: PathBuf,
     output_dir_path: PathBuf,
+    output_path: Option<PathBuf>,
     subtask_data: Vec<Vec<u8>>,
 }
 
@@ -69,6 +70,7 @@ impl<'a> TaskBuilder<'a> {
             subtask_timeout: None,
             input_dir_path: workspace.as_ref().join("in"),
             output_dir_path: workspace.as_ref().join("out"),
+            output_path: None,
             subtask_data: Vec::new(),
         }
     }
@@ -94,6 +96,13 @@ impl<'a> TaskBuilder<'a> {
     /// Sets subtasks' [`Timeout`](../timeout/struct.Timeout.html) value
     pub fn subtask_timeout(mut self, subtask_timeout: Timeout) -> Self {
         self.subtask_timeout = Some(subtask_timeout);
+        self
+    }
+
+    /// Sets task's expected output path, i.e., where the final result of
+    /// the task is meant to land
+    pub fn output_path<P: AsRef<Path>>(mut self, output_path: P) -> Self {
+        self.output_path = Some(output_path.as_ref().into());
         self
     }
 
@@ -132,6 +141,7 @@ impl<'a> TaskBuilder<'a> {
             wasm_name,
             self.input_dir_path.clone(),
             self.output_dir_path.clone(),
+            self.output_path.clone(),
         );
 
         // create input dir
@@ -274,6 +284,8 @@ pub struct Options {
     input_dir_path: PathBuf,
     #[serde(rename = "output_dir")]
     output_dir_path: PathBuf,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    output_path: Option<PathBuf>,
     subtasks: BTreeMap<String, Subtask>,
 }
 
@@ -284,12 +296,14 @@ impl Options {
         wasm_name: S,
         input_dir_path: P,
         output_dir_path: P,
+        output_path: Option<P>,
     ) -> Self {
         Self {
             js_name: js_name.into(),
             wasm_name: wasm_name.into(),
             input_dir_path: input_dir_path.into(),
             output_dir_path: output_dir_path.into(),
+            output_path: output_path.map(Into::into),
             subtasks: BTreeMap::new(),
         }
     }
@@ -312,6 +326,12 @@ impl Options {
     /// Path to the task's output dir
     pub fn output_dir_path(&self) -> &Path {
         &self.output_dir_path
+    }
+
+    /// Path to the dir where the final output of the task
+    /// is expected
+    pub fn output_path(&self) -> Option<&Path> {
+        self.output_path.as_ref().map(AsRef::as_ref)
     }
 
     /// Returns an [`Iterator`] over created [`Subtask`]'s

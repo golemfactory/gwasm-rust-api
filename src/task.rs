@@ -51,6 +51,7 @@ pub struct TaskBuilder<'a> {
     binary: GWasmBinary<'a>,
     name: Option<String>,
     bid: Option<f64>,
+    budget: Option<f64>,
     timeout: Option<Timeout>,
     subtask_timeout: Option<Timeout>,
     input_dir_path: PathBuf,
@@ -66,6 +67,7 @@ impl<'a> TaskBuilder<'a> {
             binary,
             name: None,
             bid: None,
+            budget: None,
             timeout: None,
             subtask_timeout: None,
             input_dir_path: workspace.as_ref().join("in"),
@@ -84,6 +86,12 @@ impl<'a> TaskBuilder<'a> {
     /// Sets task's bid value
     pub fn bid(mut self, bid: f64) -> Self {
         self.bid = Some(bid);
+        self
+    }
+
+    /// Sets task's budget value
+    pub fn budget(mut self, budget: f64) -> Self {
+        self.budget = Some(budget);
         self
     }
 
@@ -185,7 +193,14 @@ impl<'a> TaskBuilder<'a> {
             options.subtasks.insert(name, subtask);
         }
 
-        Ok(Task::new(name, bid, timeout, subtask_timeout, options))
+        Ok(Task::new(
+            name,
+            bid,
+            self.budget,
+            timeout,
+            subtask_timeout,
+            options,
+        ))
     }
 }
 
@@ -219,6 +234,8 @@ pub struct Task {
     task_type: String,
     name: String,
     bid: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    budget: Option<f64>,
     timeout: Timeout,
     subtask_timeout: Timeout,
     options: Options,
@@ -229,6 +246,7 @@ impl Task {
     pub fn new<S: Into<String>>(
         name: S,
         bid: f64,
+        budget: Option<f64>,
         timeout: Timeout,
         subtask_timeout: Timeout,
         options: Options,
@@ -237,6 +255,7 @@ impl Task {
             task_type: "wasm".into(),
             name: name.into(),
             bid,
+            budget,
             timeout,
             subtask_timeout,
             options,
@@ -251,6 +270,11 @@ impl Task {
     /// Task's bid value
     pub fn bid(&self) -> f64 {
         self.bid
+    }
+
+    /// Task's budget value
+    pub fn budget(&self) -> Option<f64> {
+        self.budget
     }
 
     /// Task's [`Timeout`](../timeout/struct.Timeout.html) value

@@ -1,10 +1,17 @@
-# gwasm-api [![build-status]][build-link]
+<div align="center">
+  <h1><code>gwasm-api</code></h1>
 
-[build-status]: https://github.com/golemfactory/gwasm-rust-api/workflows/Continuous%20Integration/badge.svg
-[build-link]: https://github.com/golemfactory/gwasm-rust-api/actions
+  <p>
+    <strong>A Rust library for interfacing your native apps with gWasm.</strong>
+  </p>
 
-gwasm-api - gWasm API for Rust apps
-* [API Documentation (Development)](https://golemfactory.github.io/gwasm-rust-api/gwasm_api/index.html)
+  <p>
+    <a href="https://github.com/golemfactory/gwasm-rust-api/actions"><img src="https://github.com/golemfactory/gwasm-rust-api/workflows/Continuous%20Integration/badge.svg" /></a>
+    <a href="https://crates.io/crates/gwasm-api"><img src="https://img.shields.io/crates/v/gwasm-api.svg?style=flat-square" alt="Crates.io version" /></a>
+    <a href="https://crates.io/crates/gwasm-api"><img src="https://img.shields.io/crates/d/gwasm-api.svg?style=flat-square" alt="Download" /></a>
+    <a href="https://docs.rs/gwasm-api/"><img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square" alt="docs.rs docs" /></a>
+  </p>
+</div>
 
 [gWasm](https://docs.golem.network/#/Products/Brass-Beta/gWASM) is Golem's new
 meta use-case which allows Golem's developers/users to deploy their Wasm apps

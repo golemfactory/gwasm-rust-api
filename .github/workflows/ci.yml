@@ -126,7 +126,7 @@ jobs:
     - name: Push to gh-pages
       uses: peaceiris/actions-gh-pages@v2
       env:
-        ACTIONS_DEPLOY_KEY: ${{ secrets.GITHUB_DEPLOY_KEY }}
+        PERSONAL_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: ./doc/book
       if: github.event_name == 'push' && github.event.ref == 'refs/heads/master'

@@ -107,7 +107,7 @@ jobs:
   # [cargo-wasi]: https://github.com/bytecodealliance/cargo-wasi/blob/master/.github/workflows/main.yml
   book:
     name: Book docs
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout
@@ -121,7 +121,7 @@ jobs:
     - name: Install mdbook
       run: |
         set -e
-        curl -L https://github.com/rust-lang/mdBook/releases/download/v0.3.5/mdbook-v0.3.5-x86_64-apple-darwin.tar.gz | tar xzf -
+        curl -L https://github.com/rust-lang/mdBook/releases/download/v0.3.5/mdbook-v0.3.5-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
         echo ::add-path::`pwd`
     - run: cd doc && mdbook build
     - name: Push to gh-pages

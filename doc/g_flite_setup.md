@@ -26,3 +26,23 @@ openssl = "0.10.20"
 [features]
 openssl_vendored = ["openssl/vendored"]
 ```
+
+A few words of explanation are in order here:
+* We use the [anyhow] crate to handle errors in a hassle-free way.
+* [appdirs] will allow us to specify where the default Golem client
+  configuration is in a cross-platform manner.
+* `gwasm-api` refers to this crate.
+* We use the [hound] crate to handle concatenating of WAV files
+  which we expect after each gWasm subtask completes---note that we use
+  my fork of the crate since `flite` seems not to follow the WAV format
+  to the letter and hence I've had to introduce some tweaks to be able to
+  read and concatenate the resultant WAV files in one final file.
+* Even though we don't make use of the [openssl] crate directly, we specify
+  it here, so that on Linux and macOS we can rely on prepackaged openssl lib;
+  on Windows, you'll need to install it by hand. You can find the [binaries here].
+
+[anyhow]: https://github.com/dtolnay/anyhow
+[appdirs]: https://github.com/djc/appdirs-rs
+[hound]: https://github.com/kubkon/hound
+[openssl]: https://github.com/sfackler/rust-openssl
+[binaries here]: https://slproweb.com/products/Win32OpenSSL.html

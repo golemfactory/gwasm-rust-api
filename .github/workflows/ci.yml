@@ -104,7 +104,7 @@ jobs:
   # Build mdBook guide and publish to gh-pages
   book:
     name: Book docs
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout

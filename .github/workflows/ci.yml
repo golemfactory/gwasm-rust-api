@@ -119,15 +119,14 @@ jobs:
         toolchain: stable
         override: true
     - name: Install mdbook
-      run: |
-        set -e
-        curl -L https://github.com/rust-lang/mdBook/releases/download/v0.3.5/mdbook-v0.3.5-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
-        echo ::add-path::`pwd`
+      uses: peaceiris/actions-mdbook@v1
+      with:
+        mdbook-version: '0.3.5'
     - run: cd doc && mdbook build
     - name: Push to gh-pages
       uses: peaceiris/actions-gh-pages@v2
       env:
         ACTIONS_DEPLOY_KEY: ${{ secrets.GITHUB_DEPLOY_KEY }}
         PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: ./doc/build
+        PUBLISH_DIR: ./doc/book
       if: github.event_name == 'push' && github.event.ref == 'refs/heads/master'

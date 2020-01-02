@@ -102,12 +102,9 @@ jobs:
         command: build
         
   # Build mdBook guide and publish to gh-pages
-  # Steps inspired by @alexcrichton's [cargo-wasi]
-  # conf: kudos Alex!
-  # [cargo-wasi]: https://github.com/bytecodealliance/cargo-wasi/blob/master/.github/workflows/main.yml
   book:
     name: Book docs
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     
     steps:
     - name: Checkout

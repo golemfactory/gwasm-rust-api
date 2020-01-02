@@ -125,9 +125,9 @@ jobs:
         echo ::add-path::`pwd`
     - run: cd doc && mdbook build
     - name: Push to gh-pages
-      run: curl -LsSf https://git.io/fhJ8n | rustc - && (cd doc/book && ../../rust_out)
+      uses: peaceiris/actions-gh-pages@v2
       env:
-        GITHUB_DEPLOY_KEY: ${{ secrets.GITHUB_DEPLOY_KEY }}
-        BUILD_REPOSITORY_ID: ${{ github.repository }}
-        BUILD_SOURCEVERSION: ${{ github.sha }}
+        ACTIONS_DEPLOY_KEY: ${{ secrets.GITHUB_DEPLOY_KEY }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./doc/build
       if: github.event_name == 'push' && github.event.ref == 'refs/heads/master'

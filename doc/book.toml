@@ -1,0 +1,5 @@
+[book]
+authors = ["Golem RnD Team <contact@golem.network>"]
+multilingual = false
+src = "."
+title = "gWasm API for Rust apps"

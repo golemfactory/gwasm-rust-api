@@ -11,6 +11,10 @@
     <a href="https://crates.io/crates/gwasm-api"><img src="https://img.shields.io/crates/d/gwasm-api.svg?style=flat-square" alt="Download" /></a>
     <a href="https://docs.rs/gwasm-api/"><img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square" alt="docs.rs docs" /></a>
   </p>
+
+  <h3>
+    <a href="https://golemfactory.github.io/gwasm-rust-api/">Guide</a> 
+  </h3>
 </div>
 
 [gWasm](https://docs.golem.network/#/Products/Brass-Beta/gWASM) is Golem's new

@@ -17,7 +17,6 @@ version = "0.1.0"
 authors = ["Jakub Konka <jakub.konka@golem.network>"]
 
 [dependencies]
-anyhow = "1.0"
 appdirs = "0.2"
 gwasm-api = "0.1"
 hound = { git = "https://github.com/kubkon/hound" }
@@ -28,9 +27,6 @@ openssl_vendored = ["openssl/vendored"]
 ```
 
 A few words of explanation are in order here:
-* We use the [anyhow] crate to handle errors in a hassle-free way.
-* [appdirs] will allow us to specify where the default Golem client
-  configuration is in a cross-platform manner.
 * `gwasm-api` refers to this crate.
 * We use the [hound] crate to handle concatenating of WAV files
   which we expect after each gWasm subtask completes---note that we use
@@ -41,7 +37,6 @@ A few words of explanation are in order here:
   it here, so that on Linux and macOS we can rely on prepackaged openssl lib;
   on Windows, you'll need to install it by hand. You can find the [binaries here].
 
-[anyhow]: https://github.com/dtolnay/anyhow
 [appdirs]: https://github.com/djc/appdirs-rs
 [hound]: https://github.com/kubkon/hound
 [openssl]: https://github.com/sfackler/rust-openssl

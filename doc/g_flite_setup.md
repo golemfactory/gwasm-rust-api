@@ -10,17 +10,19 @@ cargo new --bin g-flite
 Next, let us specify some dependencies ahead of time in `Cargo.toml`:
 
 ```
-# Cargo.toml
 [package]
 name = "g-flite"
 version = "0.1.0"
 authors = ["Jakub Konka <jakub.konka@golem.network>"]
+edition = 2018
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html                        
 
 [dependencies]
 appdirs = "0.2"
 gwasm-api = "0.1"
 hound = { git = "https://github.com/kubkon/hound" }
-openssl = "0.10.20"
+openssl = "0.10"
 
 [features]
 openssl_vendored = ["openssl/vendored"]

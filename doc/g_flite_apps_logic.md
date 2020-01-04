@@ -12,7 +12,9 @@ than this one, you'd probably want to split the app's functionality into a numbe
 different modules). We will also specifically not propagate any errors and instead
 panic on each (you don't want to do that in your real app).
 
-Fire up your favourite editor and open `main.rs`, and add the basic skeleton for the app:
+Fire up your favourite editor and open `src/main.rs`.
+
+## src/main.rs
 
 ```rust
 use gwasm_api::prelude::*;
@@ -40,8 +42,9 @@ fn main() {
     } else {
         eprintln!("No input file specified!");
         process::exit(1);
-    }
-    let contents = fs::read(&self.input).unwrap();
+    };
+
+    let contents = fs::read(filename).unwrap();
     let text = String::from_utf8(contents).unwrap();
 
     // Split the input

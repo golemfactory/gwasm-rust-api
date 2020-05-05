@@ -11,7 +11,7 @@ use golem_rpc_api::comp::{AsGolemComp, TaskStatus as GolemTaskStatus};
 use golem_rpc_api::connect_to_app;
 use serde_json::json;
 use std::convert::TryInto;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::pin::Pin;
 use std::time::Duration;
 use tokio::time;
@@ -38,11 +38,11 @@ pub async fn compute<P, S>(
     polling_interval: Option<Duration>,
 ) -> Result<ComputedTask>
 where
-    P: AsRef<Path>,
-    S: AsRef<str>,
+    P: Into<PathBuf>,
+    S: Into<String>,
 {
     let (endpoint, task_id) =
-        create_task(datadir.as_ref(), address.as_ref(), port, net, task.clone()).await?;
+        create_task(&datadir.into(), &address.into(), port, net, task.clone()).await?;
     let poll_stream = poll_task_progress(endpoint.clone(), task_id.clone(), polling_interval);
     let progress = poll_stream.try_fold(
         ProgressActor::new(progress_handler).start(),

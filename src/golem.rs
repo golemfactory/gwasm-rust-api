@@ -6,7 +6,9 @@ use super::task::{ComputedTask, Task};
 use super::{Net, ProgressUpdate};
 use actix::{Actor, ActorContext, Context, Handler, Message};
 use actix_wamp::RpcEndpoint;
+use futures::future::FutureExt;
 use futures::stream::{self, Stream, StreamExt, TryStreamExt};
+use futures::{pin_mut, select};
 use golem_rpc_api::comp::{AsGolemComp, TaskStatus as GolemTaskStatus};
 use golem_rpc_api::connect_to_app;
 use serde_json::json;
@@ -14,7 +16,7 @@ use std::convert::TryInto;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
 use std::time::Duration;
-use tokio::time;
+use tokio::{signal, time};
 
 /// A convenience function for running a gWasm [`Task`] on Golem
 ///
@@ -44,20 +46,34 @@ where
     let (endpoint, task_id) =
         create_task(&datadir.into(), &address.into(), port, net, task.clone()).await?;
     let poll_stream = poll_task_progress(endpoint.clone(), task_id.clone(), polling_interval);
-    let progress = poll_stream.try_fold(
-        ProgressActor::new(progress_handler).start(),
-        |addr, task_status| async move {
-            addr.send(Update {
-                progress: task_status.progress,
-            })
-            .await?;
-            Ok(addr)
-        },
-    );
-    let addr = progress.await?;
-    addr.send(Finish).await?;
-    let task: ComputedTask = task.try_into()?;
-    Ok(task)
+    let progress = poll_stream
+        .try_fold(
+            ProgressActor::new(progress_handler).start(),
+            |addr, task_status| async move {
+                addr.send(Update {
+                    progress: task_status.progress,
+                })
+                .await?;
+                Ok(addr)
+            },
+        )
+        .fuse();
+    let ctrlc = signal::ctrl_c().fuse();
+
+    pin_mut!(ctrlc, progress);
+
+    select! {
+        maybe_ctrlc = ctrlc => {
+            maybe_ctrlc?;
+            Err(Error::KeyboardInterrupt)
+        }
+        maybe_addr = progress => {
+            let addr = maybe_addr?;
+            addr.send(Finish).await?;
+            let task: ComputedTask = task.try_into()?;
+            Ok(task)
+        }
+    }
 }
 
 /// A convenience function for creating a gWasm [`Task`] on Golem

@@ -28,6 +28,10 @@ pub enum Error {
     #[error("error parsing Timeout value: {0}")]
     ChronoError(#[from] chrono::ParseError),
 
+    /// Received Ctrl-C interrupt
+    #[error("received Ctrl-C interrupt")]
+    KeyboardInterrupt,
+
     /// Error generated when trying to create a zero [`Timeout`](../timeout/struct.Timeout.html)
     /// value for a Golem Task
     #[error("zero timeout \"00:00:00\" is forbidden")]

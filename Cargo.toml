@@ -11,23 +11,27 @@ documentation = "https://docs.rs/gwasm-rust-api"
 description = "gWasm API for Rust apps"
 
 [dependencies]
-actix = "0.8"
-thiserror = "1.0"
-futures = "0.1"
-actix-wamp = "0.1"
-golem-rpc-api = "0.1"
-golem-rpc-macros = "0.1"
+actix = "0.9"
+thiserror = "1"
+futures = "0.3"
+actix-wamp = { path = "../golem-client/actix-wamp", version = "0.2" }
+golem-rpc-api = { path = "../golem-client/golem-rpc-api", version = "0.2" }
+golem-rpc-macros = { path = "../golem-client/golem-rpc-macros", version = "0.2" }
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 chrono = "0.4"
-tempfile = "3.0"
-tokio-ctrlc-error = "0.1"
-tokio = "0.1"
+tempfile = "3"
+
+[dependencies.tokio]
+version = "0.2"
+features = [
+    "time",
+    "signal"
+]
 
 [dev-dependencies]
 indicatif = "0.11"
-tempfile = "3"
-anyhow = "1.0"
+anyhow = "1"
 
 [badges]
 maintenance = { status = "actively-developed" }

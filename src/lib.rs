@@ -77,12 +77,10 @@ pub mod task;
 pub mod timeout;
 
 use actix::System;
-use error::Error;
+use error::Result;
 pub use golem_rpc_api::Net;
 use std::path::Path;
 use task::{ComputedTask, Task};
-
-pub(crate) type Result<T> = std::result::Result<T, Error>;
 
 /// Trait specifying the required interface for an object tracking the computation's
 /// progress
@@ -143,11 +141,11 @@ pub(crate) type Result<T> = std::result::Result<T, Error>;
 /// ```
 pub trait ProgressUpdate {
     /// Called when progress value was polled from Golem
-    fn update(&mut self, progress: f64);
+    fn update(&self, progress: f64);
     /// Called when progress updates started
-    fn start(&mut self) {}
+    fn start(&self) {}
     /// Called when progress updates finished
-    fn stop(&mut self) {}
+    fn stop(&self) {}
 }
 
 /// A convenience function for running a gWasm [`Task`] on Golem
@@ -167,8 +165,8 @@ pub fn compute<P, S>(
     progress_handler: impl ProgressUpdate + 'static,
 ) -> Result<ComputedTask>
 where
-    P: AsRef<Path>,
-    S: AsRef<str>,
+    P: AsRef<Path> + 'static,
+    S: AsRef<str> + 'static,
 {
     let mut system = System::new(task.name());
     system.block_on(golem::compute(
@@ -192,7 +190,7 @@ pub mod prelude {
     //! # #![allow(unused_imports)]
     //! use gwasm_api::prelude::*;
     //! ```
-    pub use super::error::Error;
+    pub use super::error::{Error, Result};
     pub use super::task::{
         ComputedSubtask, ComputedTask, GWasmBinary, Options, Subtask, Task, TaskBuilder,
     };

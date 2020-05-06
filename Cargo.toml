@@ -14,9 +14,9 @@ description = "gWasm API for Rust apps"
 actix = "0.9"
 thiserror = "1"
 futures = "0.3"
-actix-wamp = { path = "../golem-client/actix-wamp", version = "0.2" }
-golem-rpc-api = { path = "../golem-client/golem-rpc-api", version = "0.2" }
-golem-rpc-macros = { path = "../golem-client/golem-rpc-macros", version = "0.2" }
+actix-wamp = { git = "https://github.com/golemfactory/golem-client", version = "0.2.0" }
+golem-rpc-api = { git = "https://github.com/golemfactory/golem-client", version = "0.2.0" }
+golem-rpc-macros = { git = "https://github.com/golemfactory/golem-client", version = "0.2.0" }
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 chrono = "0.4"

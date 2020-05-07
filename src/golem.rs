@@ -65,6 +65,7 @@ where
     select! {
         maybe_ctrlc = ctrlc => {
             maybe_ctrlc?;
+            endpoint.as_golem_comp().abort_task(task_id).await?;
             Err(Error::KeyboardInterrupt)
         }
         maybe_addr = progress => {

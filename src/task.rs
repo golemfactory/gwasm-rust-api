@@ -179,14 +179,14 @@ impl<'a> TaskBuilder<'a> {
             fs::create_dir(&output_dir_path)?;
 
             // save input data file
-            let input_name = "in.txt";
+            let input_name = format!("in{}", i);
             let input_filename = input_dir_path.join(&input_name);
             fs::write(&input_filename, &chunk)?;
 
             let mut subtask = Subtask::new();
             subtask.exec_args.push(input_name.into());
 
-            let output_name = "in.wav";
+            let output_name = "out";
             subtask.exec_args.push(output_name.into());
             subtask.output_file_paths.push(output_name.into());
 

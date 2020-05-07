@@ -9,12 +9,12 @@
 //! ```rust,no_run
 //! use gwasm_api::prelude::*;
 //! use anyhow::Result;
-//! use std::path::Path;
+//! use std::path::PathBuf;
 //!
 //! struct ProgressTracker;
 //!
 //! impl ProgressUpdate for ProgressTracker {
-//!     fn update(&mut self, progress: f64) {
+//!     fn update(&self, progress: f64) {
 //!         println!("Current progress = {}", progress);
 //!     }
 //! }
@@ -28,8 +28,8 @@
 //!         .push_subtask_data(vec![0u8; 100])
 //!         .build()?;
 //!     let computed_task = compute(
-//!         Path::new("datadir"),
-//!         "127.0.0.1",
+//!         PathBuf::from("datadir"),
+//!         "127.0.0.1".to_string(),
 //!         61000,
 //!         Net::TestNet,
 //!         task,
@@ -77,12 +77,10 @@ pub mod task;
 pub mod timeout;
 
 use actix::System;
-use error::Error;
+use error::Result;
 pub use golem_rpc_api::Net;
-use std::path::Path;
+use std::path::PathBuf;
 use task::{ComputedTask, Task};
-
-pub(crate) type Result<T> = std::result::Result<T, Error>;
 
 /// Trait specifying the required interface for an object tracking the computation's
 /// progress
@@ -99,7 +97,7 @@ pub(crate) type Result<T> = std::result::Result<T, Error>;
 /// struct SimpleTracker;
 ///
 /// impl ProgressUpdate for SimpleTracker {
-///     fn update(&mut self, progress: f64) {
+///     fn update(&self, progress: f64) {
 ///         println!("Current progress = {}", progress);
 ///     }
 /// }
@@ -107,47 +105,48 @@ pub(crate) type Result<T> = std::result::Result<T, Error>;
 ///
 /// # Example: ProgressBar
 /// ```
+/// use std::cell::Cell;
 /// use gwasm_api::ProgressUpdate;
 /// use indicatif::ProgressBar;
 ///
 /// struct ProgressBarTracker {
 ///     bar: ProgressBar,
-///     progress: f64,
+///     progress: Cell<f64>,
 /// }
 ///
 /// impl ProgressBarTracker {
 ///     fn new(num_subtasks: u64) -> Self {
 ///         Self {
 ///             bar: ProgressBar::new(num_subtasks),
-///             progress: 0.0,
+///             progress: Cell::new(0.0),
 ///         }
 ///     }
 /// }
 ///
 /// impl ProgressUpdate for ProgressBarTracker {
-///     fn update(&mut self, progress: f64) {
-///         if progress > self.progress {
-///             self.progress = progress;
+///     fn update(&self, progress: f64) {
+///         if progress > self.progress.get() {
+///             self.progress.set(progress);
 ///             self.bar.inc(1);
 ///         }
 ///     }
 ///
-///     fn start(&mut self) {
+///     fn start(&self) {
 ///         self.bar.inc(0);
 ///     }
 ///
-///     fn stop(&mut self) {
+///     fn stop(&self) {
 ///         self.bar.finish_and_clear()
 ///     }
 /// }
 /// ```
 pub trait ProgressUpdate {
     /// Called when progress value was polled from Golem
-    fn update(&mut self, progress: f64);
+    fn update(&self, progress: f64);
     /// Called when progress updates started
-    fn start(&mut self) {}
+    fn start(&self) {}
     /// Called when progress updates finished
-    fn stop(&mut self) {}
+    fn stop(&self) {}
 }
 
 /// A convenience function for running a gWasm [`Task`] on Golem
@@ -167,8 +166,8 @@ pub fn compute<P, S>(
     progress_handler: impl ProgressUpdate + 'static,
 ) -> Result<ComputedTask>
 where
-    P: AsRef<Path>,
-    S: AsRef<str>,
+    P: Into<PathBuf> + 'static,
+    S: Into<String> + 'static,
 {
     let mut system = System::new(task.name());
     system.block_on(golem::compute(
@@ -192,7 +191,7 @@ pub mod prelude {
     //! # #![allow(unused_imports)]
     //! use gwasm_api::prelude::*;
     //! ```
-    pub use super::error::Error;
+    pub use super::error::{Error, Result};
     pub use super::task::{
         ComputedSubtask, ComputedTask, GWasmBinary, Options, Subtask, Task, TaskBuilder,
     };

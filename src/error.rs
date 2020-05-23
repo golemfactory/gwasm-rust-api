@@ -57,12 +57,12 @@ pub enum Error {
 
 impl From<actix_wamp::Error> for Error {
     fn from(err: actix_wamp::Error) -> Self {
-        Error::WampError(err)
+        Self::WampError(err)
     }
 }
 
 impl From<golem_rpc_api::Error> for Error {
     fn from(err: golem_rpc_api::Error) -> Self {
-        Error::GolemRPCError(err)
+        Self::GolemRPCError(err)
     }
 }

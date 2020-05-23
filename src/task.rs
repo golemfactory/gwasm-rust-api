@@ -1,5 +1,9 @@
 //! Convenience types for creating and managing gWasm tasks
-use super::{error::Error, timeout::Timeout, Result};
+use super::{
+    error::{Error, FileContext},
+    timeout::Timeout,
+    Result,
+};
 use serde::Serialize;
 use std::{
     collections::BTreeMap,
@@ -153,18 +157,18 @@ impl<'a> TaskBuilder<'a> {
         );
 
         // create input dir
-        fs::create_dir(&options.input_dir_path)?;
+        fs::create_dir(&options.input_dir_path).file_context(&options.input_dir_path)?;
 
         // save JS file
         let js_filename = options.input_dir_path.join(&options.js_name);
-        fs::write(&js_filename, self.binary.js)?;
+        fs::write(&js_filename, self.binary.js).file_context(&js_filename)?;
 
         // save WASM file
         let wasm_filename = options.input_dir_path.join(&options.wasm_name);
-        fs::write(&wasm_filename, self.binary.wasm)?;
+        fs::write(&wasm_filename, self.binary.wasm).file_context(&wasm_filename)?;
 
         // create output dir
-        fs::create_dir(&options.output_dir_path)?;
+        fs::create_dir(&options.output_dir_path).file_context(&options.output_dir_path)?;
 
         // subtasks
         for (i, chunk) in self.subtask_data.into_iter().enumerate() {
@@ -172,16 +176,16 @@ impl<'a> TaskBuilder<'a> {
 
             // create input subtask dir
             let input_dir_path = options.input_dir_path.join(&name);
-            fs::create_dir(&input_dir_path)?;
+            fs::create_dir(&input_dir_path).file_context(&input_dir_path)?;
 
             // create output subtask dir
             let output_dir_path = options.output_dir_path.join(&name);
-            fs::create_dir(&output_dir_path)?;
+            fs::create_dir(&output_dir_path).file_context(&output_dir_path)?;
 
             // save input data file
             let input_name = format!("in{}", i);
             let input_filename = input_dir_path.join(&input_name);
-            fs::write(&input_filename, &chunk)?;
+            fs::write(&input_filename, &chunk).file_context(&input_filename)?;
 
             let mut subtask = Subtask::new();
             subtask.exec_args.push(input_name.into());
@@ -505,7 +509,8 @@ impl TryFrom<Task> for ComputedTask {
                 let relative_path = out_path
                     .strip_prefix(Component::RootDir)
                     .unwrap_or(out_path);
-                let f = File::open(output_dir.join(relative_path))?;
+                let fname = output_dir.join(relative_path);
+                let f = File::open(&fname).file_context(&fname)?;
                 let reader = BufReader::new(f);
                 computed_subtask.data.insert(out_path.into(), reader);
             }

@@ -49,7 +49,7 @@ pub struct GWasmBinary<'a> {
 /// [`build`]: struct.TaskBuilder.html#method.build
 /// [`Task`]: ../task/struct.Task.html
 /// [`Path`]: https://doc.rust-lang.org/std/path/struct.Path.html
-/// [gWasm docs]: https://docs.golem.network/#/Products/Brass-Beta/gWASM?id=inputoutput
+/// [gWasm docs]: https://docs.golem.network/#/Products/gWASM/gWASM-tasks?id=inputoutput
 #[derive(Debug)]
 pub struct TaskBuilder<'a> {
     binary: GWasmBinary<'a>,
@@ -134,7 +134,7 @@ impl<'a> TaskBuilder<'a> {
     /// details about the dir structure, see [gWasm docs].
     ///
     /// [`Path`]: https://doc.rust-lang.org/std/path/struct.Path.html
-    /// [gWasm docs]: https://docs.golem.network/#/Products/Brass-Beta/gWASM?id=inputoutput
+    /// [gWasm docs]: https://docs.golem.network/#/Products/gWASM/gWASM-tasks?id=inputoutput
     pub fn build(mut self) -> Result<Task> {
         let name = self.name.take().unwrap_or("unknown".to_owned());
         let bid = self.bid.unwrap_or(1.0);
@@ -230,7 +230,7 @@ impl<'a> TaskBuilder<'a> {
 /// let json_manifest = json!(task);
 /// ```
 ///
-/// [gWasm Task JSON]: https://docs.golem.network/#/Products/Brass-Beta/gWASM?id=task-json
+/// [gWasm Task JSON]: https://docs.golem.network/#/Products/gWASM/gWASM-tasks?id=task-json
 /// [`TaskBuilder`]: ../task/struct.TaskBuilder.html
 #[derive(Debug, Serialize, Clone)]
 pub struct Task {

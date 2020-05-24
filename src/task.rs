@@ -116,8 +116,12 @@ impl<'a> TaskBuilder<'a> {
 
     /// Pushes subtask data into the buffer
     ///
-    /// Note that each pushed chunk of `data` is equivalent to one
-    /// subtask that will be executed on Golem Network.
+    /// Each pushed chunk of `data` will be a separate subtask that
+    /// will be executed on Golem Network.
+    /// To learn how to access the input data, consult the
+    /// [general crate docs].
+    ///
+    /// [general crate docs]: ../index.html
     pub fn push_subtask_data<T: Into<Vec<u8>>>(mut self, data: T) -> Self {
         self.subtask_data.push(data.into());
         self

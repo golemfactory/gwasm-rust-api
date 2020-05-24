@@ -37,7 +37,7 @@ pub struct GWasmBinary<'a> {
 ///     wasm: &[],
 /// };
 /// let workspace = tempdir().unwrap();
-/// let task = TaskBuilder::new(&workspace, binary).build();
+/// let task = TaskBuilder::try_new(&workspace, binary).unwrap().build();
 /// assert!(task.is_ok());
 /// assert!(task.unwrap().options().subtasks().next().is_none());
 /// ```
@@ -62,6 +62,10 @@ pub struct TaskBuilder<'a> {
 
 impl<'a> TaskBuilder<'a> {
     /// Creates new `TaskBuilder` from workspace `Path` and `GWasmBinary`
+    #[deprecated(
+        since = "0.3.0",
+        note = "Use try_new instead, which properly handles relative paths"
+    )]
     pub fn new<P: AsRef<Path>>(workspace: P, binary: GWasmBinary<'a>) -> Self {
         Self {
             binary,
@@ -75,6 +79,13 @@ impl<'a> TaskBuilder<'a> {
             output_path: None,
             subtask_data: Vec::new(),
         }
+    }
+
+    /// Creates new `TaskBuilder` from workspace `Path` and `GWasmBinary`
+    pub fn try_new<P: AsRef<Path>>(workspace: P, binary: GWasmBinary<'a>) -> Result<Self> {
+        let abspath = workspace.as_ref().canonicalize()?;
+        #[allow(deprecated)]
+        Ok(Self::new(abspath, binary))
     }
 
     /// Sets task's name
@@ -222,7 +233,7 @@ impl<'a> TaskBuilder<'a> {
 ///     wasm: &[],
 /// };
 /// let workspace = tempdir().unwrap();
-/// let task = TaskBuilder::new(&workspace, binary).build().unwrap();
+/// let task = TaskBuilder::try_new(&workspace, binary).unwrap().build().unwrap();
 /// let json_manifest = json!(task);
 /// ```
 ///
@@ -428,7 +439,7 @@ impl Subtask {
 ///     wasm: &[],
 /// };
 /// let workspace = tempdir().unwrap();
-/// let task = TaskBuilder::new(&workspace, binary).build().unwrap();
+/// let task = TaskBuilder::try_new(&workspace, binary).unwrap().build().unwrap();
 /// let computed_task: Result<ComputedTask, _> = task.try_into();
 ///
 /// assert!(computed_task.is_ok());

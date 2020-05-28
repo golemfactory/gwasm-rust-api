@@ -45,6 +45,21 @@
 //!     Ok(())
 //! }
 //! ```
+//! ## Subtask input/output
+//! For each subtask, two command line arguments are passed to the WASM binary.
+//! Conceptually, you should expect your application to be invoked as:
+//! ```shell
+//! ./app input output
+//! ```
+//! where:
+//! * `input` is the input file path
+//! * `output` is the expected output file path
+//!
+//! The app is expected to create the `output` file or the task will fail.
+//! Applications requiring multiple input or output files are currently unsupported.
+//!
+//! For more information about how to write gWASM apps see the
+//! [sp-wasm documentation](https://github.com/golemfactory/sp-wasm)
 //!
 //! ## More examples
 //! * [g-flite](https://github.com/golemfactory/g-flite) is a CLI which uses `gwasm-api`

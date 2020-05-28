@@ -1,5 +1,5 @@
 //! # gwasm-api - gWasm API for Rust apps
-//! [gWasm](https://docs.golem.network/#/Products/Brass-Beta/gWASM) is Golem's new
+//! [gWasm](https://docs.golem.network/#/Products/gWASM/About) is Golem's new
 //! meta use-case which allows Golem's developers/users to deploy their Wasm apps
 //! on Golem Network. This API providers convenience structures and functions for
 //! creating a gWasm task and connecting with Golem Network all from native Rust code.

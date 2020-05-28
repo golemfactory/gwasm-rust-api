@@ -1,6 +1,7 @@
 //! Errors that can be returned by the library
 use actix::MailboxError;
 use std::io;
+use std::path::{Path, PathBuf};
 
 /// Convience wrapper for `Result` returned by fallible functions in the library
 pub type Result<T> = std::result::Result<T, Error>;
@@ -13,8 +14,12 @@ pub enum Error {
     MailboxError(#[from] MailboxError),
 
     /// Wraps libstd's `std::io::Error` error
-    #[error("internal gWasm API error: {0}")]
+    #[error("gWasm API error: {0}")]
     IOError(#[from] io::Error),
+
+    /// Wraps libstd's `std::io::Error` error providing file context
+    #[error("gWasm API error: {1}: {0}")]
+    FileError(io::Error, PathBuf),
 
     /// Wraps Golem's `actix_wamp::Error` error
     #[error("internal Golem error: {0}")]
@@ -57,12 +62,22 @@ pub enum Error {
 
 impl From<actix_wamp::Error> for Error {
     fn from(err: actix_wamp::Error) -> Self {
-        Error::WampError(err)
+        Self::WampError(err)
     }
 }
 
 impl From<golem_rpc_api::Error> for Error {
     fn from(err: golem_rpc_api::Error) -> Self {
-        Error::GolemRPCError(err)
+        Self::GolemRPCError(err)
+    }
+}
+
+pub(crate) trait FileContext<T, P> {
+    fn file_context(self, path: P) -> Result<T>;
+}
+
+impl<T, P: AsRef<Path>> FileContext<T, P> for io::Result<T> {
+    fn file_context(self, path: P) -> Result<T> {
+        self.map_err(|e| Error::FileError(e, path.as_ref().to_owned()))
     }
 }
